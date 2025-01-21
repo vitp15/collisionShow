@@ -28,7 +28,7 @@ class Element:
 
 		if self.x < 0 + RADIUS or self.x > WIDTH - RADIUS:
 			self.dx *= -1
-		if self.y < 0 + RADIUS or self.y > HEIGHT - RADIUS:
+		if self.y < 0 + RADIUS or self.y > SIMULATION_HEIGHT - RADIUS:
 			self.dy *= -1
 
 	def draw(self, screen):
@@ -71,4 +71,4 @@ def process_elements(elements: list[Element], weakers: list[Element], strongers:
 					elements.remove(element)
 				if not element in strongers:
 					strongers.append(element)
-		element.draw(screen)
+		element.draw(simulation_screen)

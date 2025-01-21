@@ -41,6 +41,12 @@ class Element:
 
 	def transform(self, id):
 		self.id = id
+		if self.id == 0:
+			fire_sound.play()
+		elif self.id == 1:
+			leaf_sound.play()
+		else:
+			water_sound.play()
 
 	def collision(self, other):
 		return (self.x - other.x) ** 2 + (self.y - other.y) ** 2 <= (2 * RADIUS) ** 2

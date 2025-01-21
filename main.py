@@ -23,7 +23,7 @@ def main():
 	clock = pygame.time.Clock()
 	running = True
 
-	num_elements = 30
+	num_elements = 20
 	fires = [NatureElement(0, 0, WIDTH / 3, 0, SIMULATION_HEIGHT / 3) for _ in range(num_elements)]
 	leafs = [NatureElement(1, 2 * WIDTH / 3, WIDTH, 0, SIMULATION_HEIGHT / 3) for _ in range(num_elements)]
 	waters = [NatureElement(2, WIDTH / 2 - WIDTH / 6, WIDTH / 2 + WIDTH / 6, 2 * SIMULATION_HEIGHT / 3, SIMULATION_HEIGHT) for _ in range(num_elements)]

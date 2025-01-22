@@ -2,7 +2,11 @@ from config import *
 import random
 import pygame
 
+COLORS = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
+
 class Element:
+	images = [None, None, None]
+	sound = [None, None, None]
 	id: int
 	radius: float
 	x: float
@@ -10,11 +14,12 @@ class Element:
 	dx: float
 	dy: float
 	
-	def __init__(self, id: int, x_min: float, x_max: float, y_min: float, y_max: float,
+	def __init__(self, id: int, x_min: float, x_max: float, y_min: float, y_max: float, radius: float = RADIUS,
 			  dx_min: float = -1, dx_max: float = 1, dy_min: float = -1, dy_max: float = 1):
 		self.id = id
-		self.x = random.uniform(x_min + RADIUS, x_max - RADIUS)
-		self.y = random.uniform(y_min + RADIUS, y_max - RADIUS)
+		self.radius = radius
+		self.x = random.uniform(x_min + self.radius, x_max - self.radius)
+		self.y = random.uniform(y_min + self.radius, y_max - self.radius)
 		dx = random.uniform(dx_min, dx_max)
 		dy = random.uniform(dy_min, dy_max)
 		# normalize
@@ -26,39 +31,37 @@ class Element:
 		self.x += self.dx
 		self.y += self.dy
 
-		if self.x < 0 + RADIUS or self.x > WIDTH - RADIUS:
+		if self.x < 0 + self.radius or self.x > WIDTH - self.radius:
 			self.dx *= -1
-		if self.y < 0 + RADIUS or self.y > SIMULATION_HEIGHT - RADIUS:
+		if self.y < 0 + self.radius or self.y > SIMULATION_HEIGHT - self.radius:
 			self.dy *= -1
 
 	def draw(self, screen):
-		if self.id == 0:
-			pygame.draw.circle(screen, (255, 0, 0), (int(self.x), int(self.y)), RADIUS)
-		elif self.id == 1:
-			pygame.draw.circle(screen, (0, 255, 0), (int(self.x), int(self.y)), RADIUS)
-		else:
-			pygame.draw.circle(screen, (0, 0, 255), (int(self.x), int(self.y)), RADIUS)
+		for i in range(len(Element.images)):
+			if i == self.id:
+				if Element.images[i] is not None:
+					screen.blit(Element.images[i], (int(self.x - self.radius), int(self.y - self.radius)))
+				else:
+					pygame.draw.circle(screen, COLORS[i], (int(self.x), int(self.y)), self.radius)
+				break
 
 	def transform(self, id):
 		self.id = id
-		if self.id == 0:
-			fire_sound.play()
-		elif self.id == 1:
-			leaf_sound.play()
-		else:
-			water_sound.play()
+		for i in range(len(Element.sound)):
+			if i == self.id and Element.sound[i] is not None:
+				Element.sound[i].play()
+				break
 
 	def collision(self, other):
-		return (self.x - other.x) ** 2 + (self.y - other.y) ** 2 <= (2 * RADIUS) ** 2
+		return (self.x - other.x) ** 2 + (self.y - other.y) ** 2 <= (self.radius + other.radius) ** 2
 	
-class NatureElement(Element):
-	def draw(self, screen):
-		if self.id == 0:
-			screen.blit(FIRE_IMG, (int(self.x - RADIUS), int(self.y - RADIUS)))
-		elif self.id == 1:
-			screen.blit(LEAF_IMG, (int(self.x - RADIUS), int(self.y - RADIUS)))
-		else:
-			screen.blit(WATER_IMG, (int(self.x - RADIUS), int(self.y - RADIUS)))
+def set_natural():
+	Element.images = [FIRE_IMG, LEAF_IMG, WATER_IMG]
+	Element.sound = [FIRE_SOUND, LEAF_SOUND, WATER_SOUND]
+
+def set_animals():
+	Element.images = [ELEPHANT_IMG, CAT_IMG, MOUSE_IMG]
+	Element.sound = [ELEPHANT_SOUND, CAT_SOUND, MOUSE_SOUND]
 
 def process_elements(elements: list[Element], weakers: list[Element], strongers: list[Element]):
 	for element in elements.copy():
